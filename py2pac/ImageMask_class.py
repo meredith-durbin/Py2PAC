@@ -13,6 +13,7 @@ import matplotlib.pyplot as plt
 import miscellaneous as misc
 import image_mask_cybits as cybits
 import correlations as corr
+# import CompletenessFunction as cf
 
 
 #===============================================================================
@@ -402,7 +403,7 @@ class ImageMask:
     #--------------------------------#
     #- Generate randoms on the mask -#
     #--------------------------------#
-    def generate_random_sample(self, number_to_make, completeness_flag='simple'):
+    def generate_random_sample(self, number_to_make, completeness_type='simple'):
         """
         Generate a given number of random points within the mask.
 
@@ -422,7 +423,7 @@ class ImageMask:
             The Decs of the randomly placed objects within the mask.  Unit
             is degrees.  The array shape is (number_to_make,)
 
-        completeness_flag : string
+        completeness_type : string
             Tells function which kind of completeness will be used.
             Options:
             'simple' - completeness is not dependent on magnitude or
@@ -1012,7 +1013,7 @@ class ImageMask:
     #------------------------------------------#
     #- Queries completeness for given catalog -#
     #------------------------------------------#
-    def return_completenesses(self, ra_list, dec_list):
+    def return_completenesses(self, ra_list, dec_list, completeness_type='simple', completeness_dict = None):
         """
         Takes a list of RAs and Decs and returns the completenesses for
         each point.  This version only supports completeness with no
@@ -1074,11 +1075,13 @@ class ImageMask:
                    str(len(xinds[on_image])) +
                    " points that are actually on the image")
             on_mask_bits = self._mask[xinds[on_image],yinds[on_image]]
-            temp_complete[on_image] = on_mask_bits
-            complete[in_ranges] = temp_complete
+            if completeness_type == 'simple':
+                temp_complete[on_image] = on_mask_bits
+                complete[in_ranges] = temp_complete
+            else:
+                print 'poop'
 
-        return complete
-        
+        return complete        
 
     #----------------------------------------------------------------------    
     #-----------------------------------------------#

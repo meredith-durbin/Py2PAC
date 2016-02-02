@@ -53,7 +53,8 @@ class CompletenessFunction:
         self._max_mag = np.max(mag_range)
         self._mag_bin_size = mag_range[1] - mag_range[0]
         if r_range is not None:
-            self._r_range = np.asarray(r_range)
+            r_range = np.asarray(r_range)
+            self._r_range = r_range
             self._min_r = r_range.min()
             self._max_r = r_range.max()
             self._r_bin_size = r_range[1] - r_range[0]
@@ -103,7 +104,7 @@ class CompletenessFunction:
                              "length of the completeness array.")
         # create magnitude bin edges if min and max given
         if len(mag_range) == 2:
-            mag_range = np.linspace(mag_range.min(), mag_range.max(),
+            mag_range = np.linspace(np.min(mag_range), np.max(mag_range),
                 mag_length)
         # construct class instance
         completeness_function_1D = cls(completeness_array, mag_range)
@@ -166,17 +167,17 @@ class CompletenessFunction:
                              "of the completeness array.")
         # create magnitude and radius bin edges if min and max given
         if len(mag_range) == 2:
-            mag_range = np.linspace(mag_range.min(), mag_range.max(),
+            mag_range = np.linspace(np.min(mag_range), np.max(mag_range),
                 mag_length)
         if len(r_range) == 2:
-            r_range = np.linspace(r_range.min(), r_range.max(),
+            r_range = np.linspace(np.min(r_range), np.max(r_range),
                 r_length)
         # construct class instance
         completeness_function_2D = cls(completeness_array, mag_range,
             r_range=r_range)
         return completeness_function_2D
 
-#----------------------------------------------------------------------
+    #----------------------------------------------------------------------
     #-------------------------------------------------#
     #- Make a completeness function from a .npz file -#
     #-------------------------------------------------#
@@ -216,12 +217,22 @@ class CompletenessFunction:
             r_range=r_range)
         return completeness_function_npz
 
-    #----------------------------------------------------------------------
+    #----------------------------------------------------------------------        
+    #-------------------------------------------#
+    #- Randomly generates magnitudes and radii -#
+    #-------------------------------------------#
+    def generate_mags_and_radii(self, size):
+        mags = np.random.uniform(self._min_mag, self._max_mag, size=size)
+        radii = -0.2*mags + np.random.normal(-0.15,0.15,size=size) + 5.75
+        return mags, radii
+
+    #--------------------------------------------------------------------------
     #--------------------------------------------#
     #- Find completenesses for mag/radius lists -#
     #--------------------------------------------#
     def query(self, mag_list, r_list=None):
-        """Queries an instance of CompletenessFunction to find
+        """Queries an instance of CompletenessFunction to get completenesses
+        for given magnitude and radius.
 
         **Syntax**
 
